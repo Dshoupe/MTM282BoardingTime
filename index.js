@@ -21,12 +21,12 @@ mdb.once('open', function (callback) {
 });
 
 var personSchema = mongoose.Schema({
-  username: String,
-  avatarImg: String,
-  passHash: String,
-  userLevel: String,
-  email: String,
-  age: Number
+    username: String,
+    avatarImg: String,
+    passHash: String,
+    userLevel: String,
+    email: String,
+    age: Number
 });
 
 var Person = mongoose.model('People_Collection', personSchema);
@@ -37,7 +37,14 @@ var urlencodedParser = bodyParser.urlencoded({
 
 app.get('/', function (req, res) {
     res.render('title', {
-        title: 'Home',
+        title: 'Forum Website',
+        "config": config
+    })
+});
+
+app.get('/register', function (req, res) {
+    res.render('register', {
+        title: 'Register Page',
         "config": config
     })
 });

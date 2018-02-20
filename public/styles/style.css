@@ -1,0 +1,66 @@
+* {
+    font-family: Arial, Helvetica, sans-serif
+}
+
+html {
+    background: linear-gradient(to bottom right, #88D, #55D);
+    background-attachment: fixed;
+    height: 100%;
+    font-family: 'Roboto', sans-serif;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+form,
+h3,
+h1 {
+    margin-left: 10px;
+}
+
+h1 {
+    font-family: 'Baloo', cursive;
+}
+
+h3 {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+footer {
+    padding-bottom: 4px;
+    font-size: 16px;
+}
+
+img {
+    border-radius: 10px;
+    box-shadow: 5px 5px;
+    padding-left: 5px;
+    padding-top: 5px;
+}
+
+.menu_item {
+    display: inline-block;
+    width: auto;
+    height: 25px;
+    margin: 0px;
+    padding: 20px 26px;
+    padding-left: 25px;
+    background: #55F;
+    text-align: center;
+    text-decoration: none;
+}
+
+.menu_item:hover {
+    background: #57E;
+}
+
+.navbar {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    background-color: #55F;
+}
