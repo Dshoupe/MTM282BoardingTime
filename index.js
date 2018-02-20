@@ -44,9 +44,25 @@ app.get('/', function (req, res) {
 
 app.get('/register', function (req, res) {
     res.render('register', {
-        title: 'Register Page',
+        title: 'Register',
         "config": config
     })
+});
+
+app.post('/submit', urlencodedParser, function (req, res) {
+    var person = new Person({
+        username: req.body.username,
+        avatarImg: req.body.imageurl,
+        passHash: req.body.passhash,
+        userLevel: 'user',
+        email: req.body.email,
+        age: req.body.age
+    });
+    person.save(function (err, person) {
+        if (err) return console.error(err);
+        console.log(req.body.username + ' added');
+    });
+    res.redirect('/');
 });
 
 app.listen(3000);

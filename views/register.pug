@@ -1,4 +1,18 @@
 extends layout
 
 block content
-    h2 #{title}
+    h2 #{title} Page
+    form(method='post', action=`/submit`)
+        div
+            p Username: 
+                input(type='text' name='username' required)
+            p Image: 
+                input(type='text' name='imageurl' required)
+            p Password: 
+                input(type='text' name='passhash' required)
+            p Email: 
+                input(type='text' name='email' required)
+            p Age: 
+                input(type='text' name='age' required)
+        p
+            input(type='submit', value=title)
