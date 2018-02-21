@@ -3,6 +3,7 @@ var pug = require('pug');
 var path = require('path');
 var config = require('./menu');
 var bodyParser = require('body-parser');
+var bcrypt = require('bcrypt-nodejs');
 
 var app = express();
 
@@ -31,6 +32,29 @@ var personSchema = mongoose.Schema({
 
 var Person = mongoose.model('People_Collection', personSchema);
 
+var length;
+var query = Person.find({
+    'username': 'admin'
+});
+query.select('username');
+query.exec(function (err, res) {
+    if (err) throw err;
+    if (res.length === 0) {
+        var person = new Person({
+            username: 'admin',
+            avatarImg: 'https://api.adorable.io/avatars/face/eyes4/nose3/mouth7/8e8895',
+            passHash: bcrypt.hashSync('pass'),
+            userLevel: 'admin',
+            email: 'admin@admin.com',
+            age: 51
+        });
+        person.save(function (err, person) {
+            if (err) return console.error(err);
+            console.log('Admin added');
+        });
+    }
+})
+
 var urlencodedParser = bodyParser.urlencoded({
     extended: true
 });
@@ -53,7 +77,7 @@ app.post('/submit', urlencodedParser, function (req, res) {
     var person = new Person({
         username: req.body.username,
         avatarImg: req.body.imageurl,
-        passHash: req.body.passhash,
+        passHash: bcrypt.hashSync(req.body.passHash),
         userLevel: 'user',
         email: req.body.email,
         age: req.body.age
@@ -63,6 +87,10 @@ app.post('/submit', urlencodedParser, function (req, res) {
         console.log(req.body.username + ' added');
     });
     res.redirect('/');
+});
+
+app.get('/login', urlencodedParser, function (req, res) {
+
 });
 
 app.listen(3000);
