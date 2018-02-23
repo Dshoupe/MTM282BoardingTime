@@ -1,6 +1,8 @@
 {
     "menu": [
         ["Home", "/"],
-        ["Register", "/register"]
+        ["Register", "/register"],
+        ["Login", "/login"],
+        ["User Control List", "/users"]
     ]
 }

@@ -1,0 +1,11 @@
+extends layout
+
+block content
+    h3 #{title}
+    form(method='post', action=`/submitL`)
+        p Username: 
+            input(type='text' name='username' required)
+        p Password: 
+            input(type='text' name='password' required)
+        p
+            input(type='submit', value=title)

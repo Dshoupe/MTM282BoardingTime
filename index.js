@@ -4,6 +4,7 @@ var path = require('path');
 var config = require('./menu');
 var bodyParser = require('body-parser');
 var bcrypt = require('bcrypt-nodejs');
+var expressSession = require('express-session');
 
 var app = express();
 
@@ -30,13 +31,18 @@ var personSchema = mongoose.Schema({
     age: Number
 });
 
+var messageSchema = mongoose.Schema({
+    message: String,
+    user: String
+});
+
 var Person = mongoose.model('People_Collection', personSchema);
 
 var length;
 var query = Person.find({
-    'username': 'admin'
+    'userLevel': 'admin'
 });
-query.select('username');
+query.select('userLevel');
 query.exec(function (err, res) {
     if (err) throw err;
     if (res.length === 0) {
@@ -52,18 +58,52 @@ query.exec(function (err, res) {
             if (err) return console.error(err);
             console.log('Admin added');
         });
+    } else {
+        console.log("Admin is already present");
     }
-})
+});
+
+var checkAuth = function (req, res, next) {
+    if (req.session.user && req.session.user.isAuthenticated) {
+        next();
+    } else {
+        res.redirect('/');
+    }
+}
+
+var checkAuthAdmin = function (req, res, next) {
+    if (req.session.user && req.session.user.isAuthenticated && req.session.user.userLevel == 'admin') {
+        next();
+    } else {
+        res.redirect('/');
+    }
+}
+
+app.use(expressSession({
+    secret: 'BoardingTime',
+    saveUninitialized: true,
+    resave: true
+}));
 
 var urlencodedParser = bodyParser.urlencoded({
     extended: true
 });
 
 app.get('/', function (req, res) {
-    res.render('title', {
-        title: 'Forum Website',
-        "config": config
-    })
+    if (req.session.user != null) {
+        res.render('title', {
+            title: 'Forum Website',
+            "config": config,
+            "isAuth": req.session.user.isAuthenticated,
+            "name": req.session.user.username,
+            "level": req.session.user.userLevel
+        });
+    } else {
+        res.render('title', {
+            title: 'Forum Website',
+            "config": config
+        });
+    }
 });
 
 app.get('/register', function (req, res) {
@@ -86,11 +126,60 @@ app.post('/submit', urlencodedParser, function (req, res) {
         if (err) return console.error(err);
         console.log(req.body.username + ' added');
     });
+    req.session.user = {
+        isAuthenticated: true,
+        username: req.body.username,
+        userLevel: 'user'
+    };
     res.redirect('/');
 });
 
-app.get('/login', urlencodedParser, function (req, res) {
+app.get('/login', function (req, res) {
+    res.render('login', {
+        title: 'Login',
+        "config": config
+    })
+});
 
+app.post('/submitL', urlencodedParser, function (req, res) {
+    Person.findOne({
+        'username': req.body.username
+    }, function (err, person) {
+        if (err) throw err;
+        console.log(person.passHash);
+        bcrypt.compare(req.body.password, person.passHash, function (err, result) {
+            if (result) {
+                req.session.user = {
+                    isAuthenticated: true,
+                    username: req.body.username,
+                    userLevel: person.userLevel
+                };
+                res.redirect('/private');
+            } else {
+                res.redirect('/login');
+            }
+        });
+    });
+});
+
+app.get('/private', checkAuth, function (req, res) {
+    res.render('register', {
+        title: 'Test Private',
+        "config": config
+    });
+});
+
+app.get('/users', checkAuthAdmin, function (req, res) {
+    var allUsers;
+    Person.find({}, function(err, all){
+        allUsers = all;
+    });
+
+    res.render('users', {
+        title: 'User Control List',
+        "config": config,
+        users = allUsers
+    })
 });
 
 app.listen(3000);
