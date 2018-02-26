@@ -52,15 +52,28 @@ img {
     background: #55F;
     text-align: center;
     text-decoration: none;
+    
 }
 
 .menu_item:hover {
     background: #57E;
 }
 
-.navbar {
+.navbar, ul {
     margin: 0;
     padding: 0;
     list-style-type: none;
     background-color: #55F;
+}
+
+li {
+    color: white;
+}
+
+li a {
+
+}
+
+.menu_item #Register, li #Login{
+    
 }
