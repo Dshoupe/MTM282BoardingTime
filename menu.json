@@ -3,6 +3,7 @@
         ["Home", "/"],
         ["User Control List", "/users"],
         ["Register", "/register"],
+        ["Profile", "/profile"],
         ["Login", "/login"]
     ]
 }

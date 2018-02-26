@@ -22,6 +22,8 @@ html
                             li(id=item[0]) #{item[0]}
                 else if item[0] == "User Control List" && level != "admin"
                     a
+                else if item[0] == "Profile" && !isAuth
+                    a
                 else
                     a(href=item[1])
                         div(class='menu_item')

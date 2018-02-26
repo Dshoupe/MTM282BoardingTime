@@ -139,7 +139,7 @@ app.post('/submit', urlencodedParser, function (req, res) {
         username: req.body.username,
         userLevel: 'user'
     };
-    res.redirect('/');
+    res.redirect('/profile');
 });
 
 app.get('/login', function (req, res) {
@@ -163,7 +163,7 @@ app.post('/submitL', urlencodedParser, function (req, res) {
                         username: req.body.username,
                         userLevel: person.userLevel
                     };
-                    res.redirect('/');
+                    res.redirect('/profile');
                 } else {
                     res.redirect('/login');
                 }
@@ -218,6 +218,16 @@ app.get('/logout', function (req, res) {
             res.redirect('/');
         }
     })
+});
+
+app.get('/profile', function (req, res) {
+    res.render('profile', {
+        title: `${req.session.user.username}'s Profile`,
+        "config": config,
+        "isAuth": req.session.user.isAuthenticated,
+        "name": req.session.user.username,
+        "level": req.session.user.userLevel
+    });
 });
 
 app.listen(3000);
