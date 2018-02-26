@@ -52,7 +52,7 @@ query.exec(function (err, res) {
             passHash: bcrypt.hashSync('pass'),
             userLevel: 'admin',
             email: 'admin@admin.com',
-            age: 51
+            age: 50
         });
         person.save(function (err, person) {
             if (err) return console.error(err);
@@ -88,9 +88,10 @@ var urlencodedParser = bodyParser.urlencoded({
 });
 
 app.get('/', function (req, res) {
+    var message = 'Welcome to the Message Boards';
     if (req.session.user != null) {
         res.render('title', {
-            title: 'Forum Website',
+            title: message,
             "config": config,
             "isAuth": req.session.user.isAuthenticated,
             "name": req.session.user.username,
@@ -98,7 +99,7 @@ app.get('/', function (req, res) {
         });
     } else {
         res.render('title', {
-            title: 'Forum Website',
+            title: message,
             "config": config
         });
     }
