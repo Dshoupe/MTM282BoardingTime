@@ -124,7 +124,7 @@ app.get('/register', function (req, res) {
 app.post('/submit', urlencodedParser, function (req, res) {
     var person = new Person({
         username: req.body.username,
-        avatarImg: req.body.imageurl,
+        avatarImg: "",
         passHash: bcrypt.hashSync(req.body.passhash),
         userLevel: 'user',
         email: req.body.email,
@@ -154,23 +154,23 @@ app.post('/submitL', urlencodedParser, function (req, res) {
         'username': req.body.username
     }, function (err, person) {
         if (err) throw err;
-        bcrypt.compare(req.body.password, person.passHash, function (err, result) {
-            if(err) console.log(err);
-            console.log(result);
-            console.log(person.username);
-            console.log(person.passHash);
-            console.log(req.body.password);
-            if (result) {
-                req.session.user = {
-                    isAuthenticated: true,
-                    username: req.body.username,
-                    userLevel: person.userLevel
-                };
-                res.redirect('/');
-            } else {
-                res.redirect('/login');
-            }
-        });
+        if (person != null) {
+            bcrypt.compare(req.body.password, person.passHash, function (err, result) {
+                if (err) console.log(err);
+                if (result) {
+                    req.session.user = {
+                        isAuthenticated: true,
+                        username: req.body.username,
+                        userLevel: person.userLevel
+                    };
+                    res.redirect('/');
+                } else {
+                    res.redirect('/login');
+                }
+            });
+        } else {
+            res.redirect('/login');
+        }
     });
 });
 
