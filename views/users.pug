@@ -2,5 +2,15 @@ extends layout
 
 block content
     h2 Users
-    each item in users
-        p #{item}
+    if users.length == 0
+        p There are no users
+    if users.length > 0
+        each item in users
+            div
+                p #{item.username} - #{item.userLevel}
+                img(src=item.avatarImg, height=100)
+            form(method='post', action=`/deleteUser`)
+                p
+                    input(type='hidden', name='username', value=item.username)
+                p
+                    input(type='submit', value='Delete This User')

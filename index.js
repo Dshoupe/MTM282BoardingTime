@@ -37,12 +37,12 @@ var messageSchema = mongoose.Schema({
 });
 
 var Person = mongoose.model('People_Collection', personSchema);
+var Message = mongoose.model('Message_Collection', messageSchema);
 
 var length;
 var query = Person.find({
     'userLevel': 'admin'
 });
-query.select('userLevel');
 query.exec(function (err, res) {
     if (err) throw err;
     if (res.length === 0) {
@@ -58,8 +58,6 @@ query.exec(function (err, res) {
             if (err) return console.error(err);
             console.log('Admin added');
         });
-    } else {
-        console.log("Admin is already present");
     }
 });
 
@@ -107,17 +105,27 @@ app.get('/', function (req, res) {
 });
 
 app.get('/register', function (req, res) {
-    res.render('register', {
-        title: 'Register',
-        "config": config
-    })
+    if (req.session.user != null) {
+        res.render('register', {
+            title: 'Register',
+            "config": config,
+            "isAuth": req.session.user.isAuthenticated,
+            "name": req.session.user.username,
+            "level": req.session.user.userLevel
+        });
+    } else {
+        res.render('register', {
+            title: 'Register',
+            "config": config
+        });
+    }
 });
 
 app.post('/submit', urlencodedParser, function (req, res) {
     var person = new Person({
         username: req.body.username,
         avatarImg: req.body.imageurl,
-        passHash: bcrypt.hashSync(req.body.passHash),
+        passHash: bcrypt.hashSync(req.body.passhash),
         userLevel: 'user',
         email: req.body.email,
         age: req.body.age
@@ -138,7 +146,7 @@ app.get('/login', function (req, res) {
     res.render('login', {
         title: 'Login',
         "config": config
-    })
+    });
 });
 
 app.post('/submitL', urlencodedParser, function (req, res) {
@@ -146,15 +154,19 @@ app.post('/submitL', urlencodedParser, function (req, res) {
         'username': req.body.username
     }, function (err, person) {
         if (err) throw err;
-        console.log(person.passHash);
         bcrypt.compare(req.body.password, person.passHash, function (err, result) {
+            if(err) console.log(err);
+            console.log(result);
+            console.log(person.username);
+            console.log(person.passHash);
+            console.log(req.body.password);
             if (result) {
                 req.session.user = {
                     isAuthenticated: true,
                     username: req.body.username,
                     userLevel: person.userLevel
                 };
-                res.redirect('/private');
+                res.redirect('/');
             } else {
                 res.redirect('/login');
             }
@@ -162,23 +174,49 @@ app.post('/submitL', urlencodedParser, function (req, res) {
     });
 });
 
-app.get('/private', checkAuth, function (req, res) {
-    res.render('register', {
-        title: 'Test Private',
-        "config": config
+app.get('/users', checkAuthAdmin, function (req, res) {
+    Person.find({}, function (err, all) {
+        var allUsers = [];
+        for (var i = 0; i < all.length; i++) {
+            if (all[i].username != req.session.user.username) {
+                allUsers.push(all[i]);
+            }
+        }
+        if (req.session.user != null) {
+            res.render('users', {
+                title: 'User Control List',
+                "config": config,
+                "users": allUsers,
+                "isAuth": req.session.user.isAuthenticated,
+                "name": req.session.user.username,
+                "level": req.session.user.userLevel
+            });
+        } else {
+            res.render('users', {
+                title: 'User Control List',
+                "config": config,
+                "users": allUsers
+            });
+        }
     });
 });
 
-app.get('/users', checkAuthAdmin, function (req, res) {
-    var allUsers;
-    Person.find({}, function(err, all){
-        allUsers = all;
-    });
+app.post('/deleteUser', urlencodedParser, function (req, res) {
+    Person.findOneAndRemove({
+        'username': req.body.username
+    }, function (err, person) {
+        if (err) throw err;
+        res.redirect('/users');
+    })
+});
 
-    res.render('users', {
-        title: 'User Control List',
-        "config": config,
-        "users": allUsers
+app.get('/logout', function (req, res) {
+    req.session.destroy(function (err) {
+        if (err) {
+            throw err;
+        } else {
+            res.redirect('/');
+        }
     })
 });
 

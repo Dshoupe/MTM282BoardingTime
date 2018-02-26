@@ -6,9 +6,26 @@ html
     body
         ul(class='navbar')
             each item in config.menu
-                a(href=item[1])
-                    div(class='menu_item')
-                        li(id=item[0]) #{item[0]}
+                if item[0] == "Login" && !isAuth
+                    a(href=item[1])
+                        div(class='menu_item')
+                            li(id=item[0]) #{item[0]}
+                else if item[0] == "Login" && isAuth
+                    a(href="/logout")
+                        div(class='menu_item')
+                            li(id='Logout') Logout
+                else if item[0] == "Register" && isAuth
+                    a
+                else if item[0] == "User Control List" && level == "admin"
+                    a(href=item[1])
+                        div(class='menu_item')
+                            li(id=item[0]) #{item[0]}
+                else if item[0] == "User Control List" && level != "admin"
+                    a
+                else
+                    a(href=item[1])
+                        div(class='menu_item')
+                            li(id=item[0]) #{item[0]}
         block content
     footer
         hr
