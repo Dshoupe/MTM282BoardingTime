@@ -178,7 +178,7 @@ app.get('/users', checkAuthAdmin, function (req, res) {
     res.render('users', {
         title: 'User Control List',
         "config": config,
-        users: allUsers
+        "users": allUsers
     })
 });
 
