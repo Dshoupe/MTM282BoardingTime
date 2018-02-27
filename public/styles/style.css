@@ -42,6 +42,21 @@ img {
     padding-top: 5px;
 }
 
+.profile_pic {
+    box-shadow: none;
+    width: 100px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 45%;
+
+}
+
+.profile_pic:hover {
+    border-radius: 9%;
+    -webkit-transition: 1s;
+    transition: 1s;
+}
+
 .menu_item {
     display: inline-block;
     width: auto;
