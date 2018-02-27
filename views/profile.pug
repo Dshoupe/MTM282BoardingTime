@@ -1,7 +1,9 @@
 extends layout
 
 block content
-    h2 #{title}
-    - var link = "https://api.adorable.io/avatars/100/" + name + "@adorable.io.png";
-    img.profile_pic(src=link)
+    div.profile_block
+        h2 #{title}
+        - var link = "https://api.adorable.io/avatars/100/" + name + "@adorable.io.png";
+        img.profile_pic(src=link)
+        p.prof_p #{name}
     
