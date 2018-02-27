@@ -4,13 +4,13 @@ block content
     h2 Users
     if users.length == 0
         p There are no users
-    if users.length > 0
+    else
         each item in users
             div
                 p #{item.username} - #{item.userLevel}
                 img(src=item.avatarImg, height=100)
             form(method='post', action=`/deleteUser`)
                 p
-                    input(type='hidden', name='username', value=item.username)
+                    input(type='hidden', name='userId', value=item._id)
                 p
                     input(type='submit', value='Delete This User')

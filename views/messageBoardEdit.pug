@@ -1,0 +1,10 @@
+extends layout
+
+block content
+    h3 #{title}
+    form(method='post', action='/submitE')
+        div
+            textarea(rows="6" cols="80" name='textbox') #{data}
+            input(type="hidden" name="messID" value=MID)
+            br
+            input(type='submit', value=title)

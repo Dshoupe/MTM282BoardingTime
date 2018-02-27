@@ -34,7 +34,9 @@ var personSchema = mongoose.Schema({
 var messageSchema = mongoose.Schema({
     message: String,
     user: String,
-    date: String
+    date: String,
+    userId: String,
+    userImg: String
 });
 
 var Person = mongoose.model('People_Collection', personSchema);
@@ -56,8 +58,8 @@ query.exec(function (err, res) {
             age: 50
         });
         person.save(function (err, person) {
-            if (err) return console.error(err);
-            console.log('Admin added');
+            if (err) throw err;
+            // console.log('Admin added');
         });
     }
 });
@@ -89,12 +91,13 @@ var urlencodedParser = bodyParser.urlencoded({
 });
 
 app.get('/', function (req, res) {
-    Message.find({}, function(err, result){
+    Message.find({}, function (err, result) {
         var message = 'Welcome to the Message Boards';
         var allmess = [];
         for (var i = 0; i < result.length; i++) {
             allmess.push(result[i]);
         }
+
         if (req.session.user != null) {
             res.render('title', {
                 title: message,
@@ -102,7 +105,8 @@ app.get('/', function (req, res) {
                 "isAuth": req.session.user.isAuthenticated,
                 "name": req.session.user.username,
                 "level": req.session.user.userLevel,
-                "AllMessages": allmess
+                "AllMessages": allmess,
+                "UID": req.session.user.userID
             });
         } else {
             res.render('title', {
@@ -112,7 +116,7 @@ app.get('/', function (req, res) {
             });
         }
     })
-   
+
 });
 
 app.get('/register', function (req, res) {
@@ -122,7 +126,8 @@ app.get('/register', function (req, res) {
             "config": config,
             "isAuth": req.session.user.isAuthenticated,
             "name": req.session.user.username,
-            "level": req.session.user.userLevel
+            "level": req.session.user.userLevel,
+            "UID": req.session.user.userID
         });
     } else {
         res.render('register', {
@@ -141,14 +146,17 @@ app.post('/submit', urlencodedParser, function (req, res) {
         email: req.body.email,
         age: req.body.age
     });
+    var id;
     person.save(function (err, person) {
-        if (err) return console.error(err);
-        console.log(req.body.username + ' added');
+        if (err) throw err;
+        // console.log(req.body.username + ' added');
+        id = person._id;
     });
     req.session.user = {
         isAuthenticated: true,
         username: req.body.username,
-        userLevel: 'user'
+        userLevel: 'user',
+        userID: id
     };
     res.redirect('/profile');
 });
@@ -167,12 +175,13 @@ app.post('/submitL', urlencodedParser, function (req, res) {
         if (err) throw err;
         if (person != null) {
             bcrypt.compare(req.body.password, person.passHash, function (err, result) {
-                if (err) console.log(err);
+                if (err) throw err;
                 if (result) {
                     req.session.user = {
                         isAuthenticated: true,
                         username: req.body.username,
-                        userLevel: person.userLevel
+                        userLevel: person.userLevel,
+                        userID: person._id
                     };
                     res.redirect('/profile');
                 } else {
@@ -189,7 +198,7 @@ app.get('/users', checkAuthAdmin, function (req, res) {
     Person.find({}, function (err, all) {
         var allUsers = [];
         for (var i = 0; i < all.length; i++) {
-            if (all[i].username != req.session.user.username) {
+            if (all[i]._id != req.session.user.userID) {
                 allUsers.push(all[i]);
             }
         }
@@ -200,7 +209,8 @@ app.get('/users', checkAuthAdmin, function (req, res) {
                 "users": allUsers,
                 "isAuth": req.session.user.isAuthenticated,
                 "name": req.session.user.username,
-                "level": req.session.user.userLevel
+                "level": req.session.user.userLevel,
+                "UID": req.session.user.userID
             });
         } else {
             res.render('users', {
@@ -213,9 +223,7 @@ app.get('/users', checkAuthAdmin, function (req, res) {
 });
 
 app.post('/deleteUser', urlencodedParser, function (req, res) {
-    Person.findOneAndRemove({
-        'username': req.body.username
-    }, function (err, person) {
+    Person.findByIdAndRemove(req.body.userId, function (err, person) {
         if (err) throw err;
         res.redirect('/users');
     })
@@ -237,31 +245,72 @@ app.get('/profile', function (req, res) {
         "config": config,
         "isAuth": req.session.user.isAuthenticated,
         "name": req.session.user.username,
-        "level": req.session.user.userLevel
+        "level": req.session.user.userLevel,
+        "UID": req.session.user.userID
     });
 });
 
-app.get('/messageboard', function (req, res) {
+app.get('/messageboard', checkAuth, function (req, res) {
     res.render('messageboard', {
         title: "Post a message on your Board!",
         "config": config,
         "isAuth": req.session.user.isAuthenticated,
         "name": req.session.user.username,
-        "level": req.session.user.userLevel
+        "level": req.session.user.userLevel,
+        "UID": req.session.user.userID
     });
 });
 
 app.post('/submitm', urlencodedParser, function (req, res) {
-    var message = new Message({
-        message: req.body.textbox,
-        user: req.session.user.username,
-        date: new Date().toDateString()
+    Person.findById(req.session.user.userID, function (err, result) {
+        if (err) throw err;
+        var message = new Message({
+            message: req.body.textbox,
+            user: req.session.user.username,
+            date: new Date().toDateString(),
+            userId: req.session.user.userID,
+            userImg: result.avatarImg
+        });
+        message.save(function (err, message) {
+            if (err) throw err;
+            // console.log('Message added');
+        });
+        setTimeout(function () {
+            res.redirect('/');
+        }, 500);
     });
-    message.save(function (err, message) {
-        if (err) return console.error(err);
-        console.log('Message added');
+});
+
+app.post('/deletePost', urlencodedParser, function (req, res) {
+    Message.findByIdAndRemove(req.body.msgId, function (err, result) {
+        if (err) throw err;
+        res.redirect('/');
     });
-    res.redirect('/');
+});
+
+app.post('/editPost', urlencodedParser, function (req, res) {
+    Message.findById(req.body.msgId, function (err, result) {
+        // console.log(result.message);
+        res.render('messageBoardEdit', {
+            title: "Edit Post",
+            "config": config,
+            "isAuth": req.session.user.isAuthenticated,
+            "name": req.session.user.username,
+            "level": req.session.user.userLevel,
+            "UID": req.session.user.userID,
+            "data": result.message,
+            "MID": result._id
+        });
+    });
+});
+
+app.post('/submitE', urlencodedParser, function (req, res) {
+    Message.findByIdAndUpdate(req.body.messID, {
+        message: req.body.textbox
+    }, function (err, result) {
+        if (err) throw err;
+        res.redirect('/');
+    });
 });
 
 app.listen(3000);

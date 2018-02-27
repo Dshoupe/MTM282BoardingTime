@@ -48,7 +48,6 @@ img {
     margin-left: auto;
     margin-right: auto;
     border-radius: 45%;
-
 }
 
 .profile_pic:hover {
@@ -89,3 +88,19 @@ li a {}
 
 .menu_item #Register,
 li #Login {}
+
+#posted {
+    font-size: 10px;
+}
+
+.message {
+    border: 2px #000 solid;
+    border-radius: 10px;
+    margin: 0px 10px 20px 10px;
+    padding: 5px;
+    background-color: #5DF;
+}
+
+.userMsg {
+    
+}

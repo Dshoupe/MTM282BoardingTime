@@ -3,11 +3,24 @@ extends layout
 block content
     h2 #{title}
     div
-        each message in AllMessages
-            div
-                img(src= "")
-                p #{name}
-
-            div
-                p #{message.message}
-                p post: #{message.date}
+        if AllMessages.length == 0
+            p There are no messages yet. Post one!
+        else
+            each message in AllMessages
+                div(class="message")
+                    div(class="userMsg")
+                        img(src=message.userImg height=50)
+                        p #{message.user}
+                    div
+                        p #{message.message}
+                        p(id="posted") Posted: #{message.date}
+                    if UID == message.userId || level == "admin"
+                        form(method='post', action=`/deletePost`)
+                            input(type="hidden" name="msgId" value=message._id)
+                            p
+                                input(type='submit', value="Delete Post")
+                    if UID == message.userId
+                        form(method='post', action=`/editPost`)
+                            input(type="hidden" name="msgId" value=message._id)
+                            p
+                                input(type='submit', value="Edit Post")
