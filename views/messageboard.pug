@@ -1,0 +1,9 @@
+extends layout
+
+block content
+    h3 #{title}
+    form(method='post', action='/submitm')
+        div
+            textarea(rows="6" cols="80" name='textbox')
+            br
+            input(type='submit', value=title)
