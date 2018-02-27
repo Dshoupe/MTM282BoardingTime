@@ -6,4 +6,34 @@ block content
         - var link = "https://api.adorable.io/avatars/100/" + name + "@adorable.io.png";
         img.profile_pic(src=link)
         p.prof_p #{name}
-    
+        p #{UID}
+        
+        h3 Edit your profile:
+        hr
+        form(method='post', action=`/editU`)
+            input(type="hidden" name="usID" value=UID)
+            p Username: 
+                input(type="text" name="usernameE" required)
+            p
+                input(type="submit" value="Edit Username")
+        br
+        form(method='post', action=`/editP`)
+            input(type="hidden" name="usID" value=UID)
+            p Password: 
+                input(type="text" name="passwordE" required)
+            p
+                input(type="submit" value="Edit Password")
+        br
+        form(method='post', action=`/editE`)
+            input(type="hidden" name="usID" value=UID)
+            p Email: 
+                input(type="text" name="emailE" required)
+            p
+                input(type="submit" value="Edit Email")
+        br
+        form(method='post', action=`/editA`)
+            input(type="hidden" name="usID" value=UID)
+            p Age: 
+                input(type="text" name="ageE" required)
+            p
+                input(type="submit" value="Edit Age")

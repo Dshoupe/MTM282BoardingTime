@@ -97,7 +97,6 @@ app.get('/', function (req, res) {
         for (var i = 0; i < result.length; i++) {
             allmess.push(result[i]);
         }
-
         if (req.session.user != null) {
             res.render('title', {
                 title: message,
@@ -310,6 +309,52 @@ app.post('/submitE', urlencodedParser, function (req, res) {
     }, function (err, result) {
         if (err) throw err;
         res.redirect('/');
+    });
+});
+
+app.post('/editU', urlencodedParser, function (req, res) {
+    Person.findByIdAndUpdate(req.body.usID, {
+        username: req.body.usernameE
+    }, function (err, result) {
+        if (err) throw err;
+        var id = req.session.user.userId;
+        var userlevel = req.session.user.userLevel;
+        req.session.user = {
+            isAuthenticated: true,
+            username: req.body.usernameE,
+            userLevel: userlevel,
+            userID: id
+        };
+        setTimeout(function () {
+            res.redirect('/profile');
+        }, 500)
+    });
+});
+
+app.post('/editE', urlencodedParser, function (req, res) {
+    Person.findByIdAndUpdate(req.body.usID, {
+        email: req.body.emailE
+    }, function (err, result) {
+        if (err) throw err;
+        res.redirect('/profile');
+    });
+});
+
+app.post('/editA', urlencodedParser, function (req, res) {
+    Person.findByIdAndUpdate(req.body.usID, {
+        age: req.body.ageE
+    }, function (err, result) {
+        if (err) throw err;
+        res.redirect('/profile');
+    });
+});
+
+app.post('/editP', urlencodedParser, function (req, res) {
+    Person.findByIdAndUpdate(req.body.usID, {
+        passHash: bcrypt.hashSync(req.body.passwordE)
+    }, function (err, result) {
+        if (err) throw err;
+        res.redirect('/profile');
     });
 });
 
