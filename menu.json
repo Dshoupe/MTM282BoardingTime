@@ -4,6 +4,7 @@
         ["User Control List", "/users"],
         ["Register", "/register"],
         ["Profile", "/profile"],
+        ["Message Board","/messageboard"],
         ["Login", "/login"]
     ]
 }

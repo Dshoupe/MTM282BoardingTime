@@ -33,7 +33,8 @@ var personSchema = mongoose.Schema({
 
 var messageSchema = mongoose.Schema({
     message: String,
-    user: String
+    user: String,
+    date: String
 });
 
 var Person = mongoose.model('People_Collection', personSchema);
@@ -88,21 +89,30 @@ var urlencodedParser = bodyParser.urlencoded({
 });
 
 app.get('/', function (req, res) {
-    var message = 'Welcome to the Message Boards';
-    if (req.session.user != null) {
-        res.render('title', {
-            title: message,
-            "config": config,
-            "isAuth": req.session.user.isAuthenticated,
-            "name": req.session.user.username,
-            "level": req.session.user.userLevel
-        });
-    } else {
-        res.render('title', {
-            title: message,
-            "config": config
-        });
-    }
+    Message.find({}, function(err, result){
+        var message = 'Welcome to the Message Boards';
+        var allmess = [];
+        for (var i = 0; i < result.length; i++) {
+            allmess.push(result[i]);
+        }
+        if (req.session.user != null) {
+            res.render('title', {
+                title: message,
+                "config": config,
+                "isAuth": req.session.user.isAuthenticated,
+                "name": req.session.user.username,
+                "level": req.session.user.userLevel,
+                "AllMessages": allmess
+            });
+        } else {
+            res.render('title', {
+                title: message,
+                "config": config,
+                "AllMessages": allmess
+            });
+        }
+    })
+   
 });
 
 app.get('/register', function (req, res) {
@@ -229,6 +239,29 @@ app.get('/profile', function (req, res) {
         "name": req.session.user.username,
         "level": req.session.user.userLevel
     });
+});
+
+app.get('/messageboard', function (req, res) {
+    res.render('messageboard', {
+        title: "Post a message on your Board!",
+        "config": config,
+        "isAuth": req.session.user.isAuthenticated,
+        "name": req.session.user.username,
+        "level": req.session.user.userLevel
+    });
+});
+
+app.post('/submitm', urlencodedParser, function (req, res) {
+    var message = new Message({
+        message: req.body.textbox,
+        user: req.session.user.username,
+        date: new Date().toDateString()
+    });
+    message.save(function (err, message) {
+        if (err) return console.error(err);
+        console.log('Message added');
+    });
+    res.redirect('/');
 });
 
 app.listen(3000);

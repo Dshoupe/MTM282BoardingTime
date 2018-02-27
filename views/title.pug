@@ -2,3 +2,12 @@ extends layout
 
 block content
     h2 #{title}
+    div
+        each message in AllMessages
+            div
+                img(src= "")
+                p #{name}
+
+            div
+                p #{message.message}
+                p post: #{message.date}
