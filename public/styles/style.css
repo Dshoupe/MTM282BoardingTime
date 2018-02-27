@@ -25,6 +25,10 @@ h1 {
     font-family: 'Baloo', cursive;
 }
 
+h2 {
+    margin-left: 15px;
+}
+
 h3 {
     font-weight: bold;
     font-size: 20px;
@@ -44,6 +48,13 @@ img {
 
 .profile_block {
     display: inline-block;
+    border: 2px solid black;
+    padding-left: 10px;
+    margin: 10px;
+    width: 97.5%;
+    border-bottom-right-radius: 20px;
+    border-top-left-radius: 20px;
+    background: linear-gradient(#5DF, #0998B2);
 }
 
 .profile_pic {
@@ -53,10 +64,16 @@ img {
     margin-right: auto;
     border-radius: 48%;
 }
+
 .profile_pic:hover {
     border-radius: 9%;
     -webkit-transition: 1s;
     transition: 1s;
+}
+
+.userMsg img {
+    border-radius: 48%;
+    box-shadow: none;
 }
 
 .prof_p {
@@ -101,11 +118,11 @@ li #Login {}
 }
 
 .message {
-    border: 2px #000 solid;
+    border: 1px #000 solid;
     border-radius: 10px;
     margin: 0px 10px 20px 10px;
     padding: 5px;
-    background-color: #5DF;
+    background: linear-gradient(#5DF, #0998B2);
 }
 
 .userMsg {
