@@ -139,7 +139,7 @@ app.get('/register', function (req, res) {
 app.post('/submit', urlencodedParser, function (req, res) {
     var person = new Person({
         username: req.body.username,
-        avatarImg: "",
+        avatarImg: "https://api.adorable.io/avatars/100/" + req.body.username + "@adorable.io.png",
         passHash: bcrypt.hashSync(req.body.passhash),
         userLevel: 'user',
         email: req.body.email,
@@ -155,7 +155,8 @@ app.post('/submit', urlencodedParser, function (req, res) {
         isAuthenticated: true,
         username: req.body.username,
         userLevel: 'user',
-        userID: id
+        userID: id,
+        img: person.avatarImg
     };
     res.redirect('/profile');
 });
@@ -180,7 +181,8 @@ app.post('/submitL', urlencodedParser, function (req, res) {
                         isAuthenticated: true,
                         username: req.body.username,
                         userLevel: person.userLevel,
-                        userID: person._id
+                        userID: person._id,
+                        img: person.avatarImg
                     };
                     res.redirect('/profile');
                 } else {
@@ -245,7 +247,8 @@ app.get('/profile', function (req, res) {
         "isAuth": req.session.user.isAuthenticated,
         "name": req.session.user.username,
         "level": req.session.user.userLevel,
-        "UID": req.session.user.userID
+        "UID": req.session.user.userID,
+        "uImg": req.session.user.img
     });
 });
 
@@ -319,11 +322,13 @@ app.post('/editU', urlencodedParser, function (req, res) {
         if (err) throw err;
         var id = req.session.user.userId;
         var userlevel = req.session.user.userLevel;
+        var uImg = req.session.user.img;
         req.session.user = {
             isAuthenticated: true,
             username: req.body.usernameE,
             userLevel: userlevel,
-            userID: id
+            userID: id,
+            img: uImg
         };
         setTimeout(function () {
             res.redirect('/profile');
@@ -354,7 +359,9 @@ app.post('/editP', urlencodedParser, function (req, res) {
         passHash: bcrypt.hashSync(req.body.passwordE)
     }, function (err, result) {
         if (err) throw err;
-        res.redirect('/profile');
+        setTimeout(function(){
+            res.redirect('/profile');
+        }, 500);
     });
 });
 
