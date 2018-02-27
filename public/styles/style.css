@@ -52,7 +52,7 @@ img {
     margin-left: auto;
     margin-right: auto;
     border-radius: 48%;
-
+}
 .profile_pic:hover {
     border-radius: 9%;
     -webkit-transition: 1s;
