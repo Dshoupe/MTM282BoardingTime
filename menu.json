@@ -3,8 +3,8 @@
         ["Home", "/"],
         ["User Control List", "/users"],
         ["Register", "/register"],
-        ["Profile", "/profile"],
         ["Post Message", "/messageboard"],
+        ["Profile", "/profile"],
         ["Login", "/login"]
     ]
 }

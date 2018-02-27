@@ -232,11 +232,8 @@ app.post('/deleteUser', urlencodedParser, function (req, res) {
 
 app.get('/logout', function (req, res) {
     req.session.destroy(function (err) {
-        if (err) {
-            throw err;
-        } else {
-            res.redirect('/');
-        }
+        if (err) throw err;
+        res.redirect('/');
     })
 });
 
@@ -270,8 +267,8 @@ app.post('/submitm', urlencodedParser, function (req, res) {
             message: req.body.textbox,
             user: req.session.user.username,
             date: new Date().toDateString(),
-            userId: req.session.user.userID,
-            userImg: result.avatarImg
+            userId: result._id,
+            userImg: req.session.user.img
         });
         message.save(function (err, message) {
             if (err) throw err;
@@ -359,7 +356,7 @@ app.post('/editP', urlencodedParser, function (req, res) {
         passHash: bcrypt.hashSync(req.body.passwordE)
     }, function (err, result) {
         if (err) throw err;
-        setTimeout(function(){
+        setTimeout(function () {
             res.redirect('/profile');
         }, 500);
     });
